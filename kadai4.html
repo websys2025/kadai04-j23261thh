@@ -6,8 +6,11 @@
     </head>
     <body>
         <h1 id="vending-machine">自動販売機システム</h1>
+        <div>現在の所持金: <span id="money_area"></span>円</div>
         <table id="item_area" border="1"></table>
         <script>
+            let usr_money = 500;
+            document.getElementById("money_area").innerHTML = usr_money;
             // 商品一覧を記録する連想配列の配列
             const items =  [
                 { id: 1, name: "緑茶", price: 140, stock: 5 },
@@ -19,7 +22,7 @@
                 { id: 7, name: "コーヒー", price: 170, stock: 8 },
                 { id: 8, name: "紅茶", price: 140, stock: 6 }
             ]
-
+            
             // 商品用のクラス定義
             class Item {
                 static number = 1;
@@ -46,12 +49,20 @@
                 // 商品購入の関数
                 buyItem() {          
                     if (this.stock >= 1) { 
+                        if(usr_money >= this.price) {
+                            usr_money -= this.price;
+                            document.getElementById("money_area").innerHTML = usr_money;
+                            console.log(this.name+"を購入しました"+"残金は"+usr_money+"円です。");
+                        } else {
+                            console.log(this.name+"はお金が足りないため購入できません。");
+                            return;
+                        }
                         console.log("商品番号: "+this.id+", 商品名: "+this.name+"を購入します。");
                         // 課題4-2. ここにコードを書く
-                        // 購入による商品の在庫削減処理
-                        
+                        this.stock--;
+                        console.log("残りは"+this.stock+"個です。");
                         // 課題4-3. ここにコードを書く
-                        // 在庫用のエレメントを抽出し、HTML内の個数を更新
+                        document.getElementById("stock"+this.id).innerHTML = this.stock;
                     } else console.log(this.name+"は商品の在庫がないため購入できません。");
                 }
             } // End of Item class
@@ -79,6 +90,10 @@
             // クリックイベント時の購入処理の設定
             for (let i=0; i<item_list.length; i++) {
                 // 課題4-3. ここにコードを書く
+                btn[i] = document.getElementById("button"+item_list[i].id);
+                btn[i].addEventListener("click", function() {
+                    item_list[i].buyItem();
+                });
             }
             Item.showItemList(item_list);
 
